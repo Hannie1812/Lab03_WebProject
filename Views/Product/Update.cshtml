@@ -1,0 +1,64 @@
+﻿@model Lab_03.WebProject.Models.Product
+
+<h2>Cập nhật sản phẩm</h2>
+
+<form asp-action="Update" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CategoryId">Category</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-control"></select>
+    </div>
+    <!-- Ảnh chính -->
+    <div class="form-group">
+        <label>Ảnh chính:</label>
+        <input type="file" name="imageUrl" class="form-control" />
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div>
+                @* <img src="@Model.ImageUrl" width="200" /> *@
+                @* <input type="checkbox" name="deleteMainImage" value="true" /> Xóa ảnh chính *@
+            </div>
+        }
+    </div>
+
+    <!-- Ảnh phụ -->
+    <div class="form-group">
+        <label>Ảnh phụ:</label>
+        <input type="file" name="newImageUrls" multiple class="form-control" />
+
+        @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+        {
+            <div>
+                @foreach (var img in Model.ImageUrls)
+                {
+                    <div>
+                        <img src="@img.Url" width="100" />
+                        <input type="checkbox" name="existingImageUrls" value="@img.Url" checked /> Giữ ảnh này
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-warning">Cập nhật</button>
+    <a asp-action="Index" class="btn btn-outline-warning">Hủy</a>
+</form>

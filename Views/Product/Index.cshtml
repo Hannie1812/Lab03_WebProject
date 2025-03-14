@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Lab_03.WebProject.Models.Product>
+<h2>Products</h2>
+
+<a class="btn btn-outline-warning mb-3" asp-action="Add">Add product</a>
+
+<form id="productForm" method="post">
+    <table class="table">
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAll" /></th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td><input type="checkbox" name="selectedProducts" value="@product.Id" class="product-checkbox" /></td>
+                    <td>@product.Name</td>
+                    <td>@product.Price</td>
+                    <td>@product.Description</td>
+                    <td>@product.Category?.Name</td>
+                    <td>
+                        <img src="@product.ImageUrl" alt="Product Image" style="width: 100px; height: auto;" />
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-light" asp-action="Display" asp-route-id="@product.Id">
+                                <i class="fa fa-eye"></i> View
+                            </a>
+                            <a class="btn btn-warning" asp-action="Update" asp-route-id="@product.Id">
+                                <i class="fa fa-edit"></i> Edit
+                            </a>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@product.Id">
+                                <i class="fa fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-danger" formaction="@Url.Action("DeleteSelected")">Xóa đã chọn</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById('selectAll').addEventListener('change', function () {
+            let checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+    </script>
+}

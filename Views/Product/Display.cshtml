@@ -1,0 +1,36 @@
+﻿@model Lab_03.WebProject.Models.Product
+@{
+    ViewData["Title"] = "Product Detail";
+}
+
+<h2>@Model?.Name</h2>
+
+@if (Model != null)
+{
+    <div>
+        <h4>Name: </h4> <p>@Model.Name</p>
+        <h4>Price: </h4> <p>@Model.Price.ToString("C")</p><!-- Định dạng tiền tệ -->
+        <h4>Description: </h4> <p>@Model.Description</p>
+
+        <div class="mb-3">
+            <img src="@Model.ImageUrl" alt="Main image of @Model.Name" class="img-thumbnail" style="width: 300px; height: auto;" />
+        </div>
+
+        @if (Model.ImageUrls != null && Model.ImageUrls.Count > 0)
+        {
+            <h5>Additional Images:</h5>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var image in Model.ImageUrls)
+                {
+                    <img src="@image.Url" alt="Additional image of @Model.Name" class="img-thumbnail" style="width: 200px; height: auto;" />
+                }
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p class="text-danger">Product not found.</p>
+}
+
+<a asp-action="Index" class="btn btn-outline-warning mt-3">Quay lại</a>
