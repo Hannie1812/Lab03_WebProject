@@ -230,5 +230,17 @@ namespace ProjectName.Controllers
             await _productRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteSelected(List<int> selectedProducts)
+        {
+            if (selectedProducts != null && selectedProducts.Any())
+            {
+                foreach (var id in selectedProducts)
+                {
+                    await _productRepository.DeleteAsync(id);
+                }
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
