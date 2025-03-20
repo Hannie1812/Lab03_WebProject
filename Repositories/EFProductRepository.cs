@@ -27,7 +27,12 @@ namespace Lab_03.WebProject.Repositories
                 .Include(p => p.ImageUrls) // Lấy danh sách ảnh phụ
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
-
+        public async Task<IEnumerable<Product>> GetByCategoryIdAsync(int categoryId)
+        {
+            return await _context.Products
+                .Where(p => p.CategoryId == categoryId)
+                .ToListAsync();
+        }
 
         public async Task AddAsync(Product product)
         {

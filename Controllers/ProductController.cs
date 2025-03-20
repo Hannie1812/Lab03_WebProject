@@ -8,12 +8,18 @@ namespace ProjectName.Controllers
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
-        public ProductController(IProductRepository productRepository,
-       ICategoryRepository categoryRepository)
+        private readonly ILogger<ProductController> _logger; //Ghi log thông tin, cảnh báo, hoặc lỗi.
+
+        public ProductController(
+            IProductRepository productRepository,
+            ICategoryRepository categoryRepository,
+            ILogger<ProductController> logger) // Inject ILogger
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
+            _logger = logger;
         }
+
         // Hiển thị danh sách sản phẩm
         public async Task<IActionResult> Index()
         {
@@ -55,7 +61,7 @@ namespace ProjectName.Controllers
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View(product);
         }
-        // Viết thêm hàm SaveImage (tham khảo bài 02)
+        // Viết thêm hàm SaveImage
         /*private async Task<string> SaveImage(IFormFile image)
         {
             //Thay đổi đường dẫn theo cấu hình của bạn
@@ -68,20 +74,14 @@ namespace ProjectName.Controllers
         }*/
         private async Task<string> SaveImage(IFormFile image)
         {
-            if (image == null || image.Length == 0)
-            {
-                return string.Empty;
-            }
-
-            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(image.FileName)}";
-            var savePath = Path.Combine("wwwroot/images", fileName);
+            var savePath = Path.Combine("wwwroot/images", image.FileName);
 
             using (var fileStream = new FileStream(savePath, FileMode.Create))
             {
-                await image.CopyToAsync(fileStream);
+                await image.CopyToAsync(fileStream); //ghi file bất đồng bộ
             }
 
-            return "/images/" + fileName;
+            return "/images/" + image.FileName;
         }
 
         // Hiển thị thông tin chi tiết sản phẩm
@@ -110,7 +110,7 @@ namespace ProjectName.Controllers
         /*[HttpPost]
         public async Task<IActionResult> Update(int id, Product product, IFormFile imageUrl)
         {
-            ModelState.Remove("ImageUrl"); // Loại bỏ xác thực ModelState cho ImageUrl
+            ModelState.Remove("ImageUrl"); //Xóa kiểm tra ModelState cho ImageUrl (vì nó có thể null).
         if (id != product.Id)
             {
                 return NotFound();
@@ -118,8 +118,8 @@ namespace ProjectName.Controllers
             if (ModelState.IsValid)
             {
                 var existingProduct = await
-               _productRepository.GetByIdAsync(id); // Giả định có phương thức GetByIdAsync
-                                                    // Giữ nguyên thông tin hình ảnh nếu không có hình mới được tải lên
+               _productRepository.GetByIdAsync(id); 
+                                                    
             if (imageUrl == null)
                 {
                     product.ImageUrl = existingProduct.ImageUrl;
@@ -189,10 +189,21 @@ namespace ProjectName.Controllers
             // Xóa ảnh phụ không được giữ lại
             if (existingImageUrls != null)
             {
-                existingProduct.ImageUrls = existingProduct.ImageUrls
-                    .Where(img => existingImageUrls.Contains(img.Url))
+                var imagesToDelete = existingProduct.ImageUrls
+                    .Where(img => !existingImageUrls.Contains(img.Url))
                     .ToList();
+
+                foreach (var img in imagesToDelete)
+                {
+                    var imagePath = Path.Combine("wwwroot", img.Url.TrimStart('/'));
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+                    existingProduct.ImageUrls.Remove(img);
+                }
             }
+
             else
             {
                 existingProduct.ImageUrls.Clear();
@@ -224,12 +235,58 @@ namespace ProjectName.Controllers
             return View(product);
         }
         // Xử lý xóa sản phẩm
-        [HttpPost, ActionName("DeleteConfirmed")]
+        /*[HttpPost, ActionName("DeleteConfirmed")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _productRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }*/
+        [HttpPost, ActionName("DeleteConfirmed")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                var product = await _productRepository.GetByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                // Xóa ảnh chính nếu có
+                if (!string.IsNullOrEmpty(product.ImageUrl))
+                {
+                    var mainImagePath = Path.Combine("wwwroot", product.ImageUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(mainImagePath))
+                    {
+                        System.IO.File.Delete(mainImagePath);
+                    }
+                }
+
+                // Xóa ảnh phụ
+                if (product.ImageUrls != null && product.ImageUrls.Any())
+                {
+                    foreach (var image in product.ImageUrls)
+                    {
+                        var imagePath = Path.Combine("wwwroot", image.Url.TrimStart('/'));
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+                        }
+                    }
+                }
+
+                // Xóa sản phẩm
+                await _productRepository.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi
+                _logger.LogError($"Lỗi khi xóa sản phẩm {id}: {ex.Message}");
+                return BadRequest("Có lỗi xảy ra khi xóa sản phẩm.");
+            }
         }
+
         [HttpPost]
         public async Task<IActionResult> DeleteSelected(List<int> selectedProducts)
         {

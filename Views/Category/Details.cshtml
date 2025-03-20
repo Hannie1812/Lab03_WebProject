@@ -1,9 +1,10 @@
-﻿@model IEnumerable<Lab_03.WebProject.Models.Product>
-<h2>Products</h2>
+﻿@model Category
 
-<a class="btn btn-outline-warning mb-3" asp-action="Add">Add product</a>
+<h2>Chi tiết danh mục: @Model.Name</h2>
 
-<form id="productForm" method="post">
+<h3>Danh sách sản phẩm</h3>
+@if (ViewBag.Products != null && ViewBag.Products.Count > 0)
+{
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -17,7 +18,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var product in Model)
+            @foreach (var product in ViewBag.Products)
             {
                 <tr>
                     <td><input type="checkbox" name="selectedProducts" value="@product.Id" class="product-checkbox" /></td>
@@ -30,13 +31,13 @@
                     </td>
                     <td>
                         <div class="btn-group" role="group">
-                            <a class="btn btn-light me-2" asp-action="Display" asp-route-id="@product.Id">
+                            <a class="btn btn-light me-2" asp-controller="Product" asp-action="Display" asp-route-id="@product.Id">
                                 <i class="fa fa-eye"></i> View
                             </a>
-                            <a class="btn btn-warning me-2" asp-action="Update" asp-route-id="@product.Id">
+                            <a class="btn btn-warning me-2" asp-controller="Product" asp-action="Update" asp-route-id="@product.Id">
                                 <i class="fa fa-edit"></i> Edit
                             </a>
-                            <a class="btn btn-danger me-2" asp-action="Delete" asp-route-id="@product.Id">
+                            <a class="btn btn-danger me-2" asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id">
                                 <i class="fa fa-trash"></i> Delete
                             </a>
                         </div>
@@ -45,17 +46,10 @@
             }
         </tbody>
     </table>
-
-    <button type="submit" class="btn btn-danger" formaction="@Url.Action("DeleteSelected", "Product")">Delete Selected</button>
-
-
-</form>
-
-@section Scripts {
-    <script>
-        document.getElementById('selectAll').addEventListener('change', function () {
-            let checkboxes = document.querySelectorAll('.product-checkbox');
-            checkboxes.forEach(cb => cb.checked = this.checked);
-        });
-    </script>
 }
+else
+{
+    <p class="text-danger">Product not found.</p>
+}
+
+<a href="@Url.Action("Index", "Category")" class="btn btn-outline-warning mt-3">Quay lại</a>

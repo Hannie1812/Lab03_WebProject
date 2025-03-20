@@ -28,21 +28,28 @@
         <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-control"></select>
     </div>
     <!-- Ảnh chính -->
-    <div class="form-group">
+    @* <div class="form-group">
         <label>Ảnh chính:</label>
         <input type="file" name="imageUrl" class="form-control" />
         @if (!string.IsNullOrEmpty(Model.ImageUrl))
         {
             <div>
-                @* <img src="@Model.ImageUrl" width="200" /> *@
-                @* <input type="checkbox" name="deleteMainImage" value="true" /> Xóa ảnh chính *@
+                 <img src="@Model.ImageUrl" width="200" /> 
+                 <br />
+                 <input type="checkbox" name="deleteMainImage" value="true" /> Xóa ảnh chính 
             </div>
         }
-    </div>
+    </div> *@
+    <div class="form-group">
+        <label asp-for="ImageUrl">Product Image</label>
+        <input type="file" asp-for="ImageUrl" class="form-control" id="imageInput" />
+
+        <img src="@Model.ImageUrl" alt="Product Image" style="max-width:100px;" id="previewImage" />
+    </<div>
 
     <!-- Ảnh phụ -->
     <div class="form-group">
-        <label>Ảnh phụ:</label>
+        <label>More images:</label>
         <input type="file" name="newImageUrls" multiple class="form-control" />
 
         @if (Model.ImageUrls != null && Model.ImageUrls.Any())
@@ -52,7 +59,8 @@
                 {
                     <div>
                         <img src="@img.Url" width="100" />
-                        <input type="checkbox" name="existingImageUrls" value="@img.Url" checked /> Giữ ảnh này
+                        <br />
+                        <input type="checkbox" name="existingImageUrls" value="@img.Url" checked /> Keep this image
                     </div>
                 }
             </div>
@@ -62,3 +70,19 @@
     <button type="submit" class="btn btn-warning">Cập nhật</button>
     <a asp-action="Index" class="btn btn-outline-warning">Hủy</a>
 </form>
+
+<script>
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+    input.addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+    const img = document.getElementById("previewImage")
+    img.src = e.target.result
+    };
+    reader.readAsDataURL(file);
+    }
+    });
+    });
+</script>

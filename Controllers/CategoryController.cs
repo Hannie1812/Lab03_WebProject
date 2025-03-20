@@ -1,15 +1,21 @@
 ﻿using Lab_03.WebProject.Models;
 using Lab_03.WebProject.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using ProjectName.Controllers;
 
 namespace Lab_03.WebProject.Controllers
 {
     public class CategoryController : Controller
     {
+        private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryController(ICategoryRepository categoryRepository)
+        public CategoryController(
+            IProductRepository productRepository,
+            ICategoryRepository categoryRepository,
+            ILogger<ProductController> logger) // Inject ILogger
         {
+            _productRepository = productRepository;
             _categoryRepository = categoryRepository;
         }
 
@@ -83,5 +89,24 @@ namespace Lab_03.WebProject.Controllers
             await _categoryRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
+        //Hiển thị danh sách sản phẩm theo danh mục
+        public async Task<IActionResult> Details(int id)
+        {
+            var category = await _categoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            // Lấy danh sách sản phẩm thuộc danh mục này
+            var products = await _productRepository.GetByCategoryIdAsync(id);
+
+            // Truyền dữ liệu sang View
+            ViewBag.Products = products;
+
+            return View(category);
+        }
+
     }
 }

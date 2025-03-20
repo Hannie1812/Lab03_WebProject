@@ -18,7 +18,7 @@
 
         @if (Model.ImageUrls != null && Model.ImageUrls.Count > 0)
         {
-            <h5>Additional Images:</h5>
+            <h5>More Images:</h5>
             <div class="d-flex flex-wrap gap-2">
                 @foreach (var image in Model.ImageUrls)
                 {
@@ -33,4 +33,4 @@ else
     <p class="text-danger">Product not found.</p>
 }
 
-<a asp-action="Index" class="btn btn-outline-warning mt-3">Quay lại</a>
+<a href="@Url.Action("Index", "Product")" class="btn btn-outline-warning mt-3">Quay lại</a>

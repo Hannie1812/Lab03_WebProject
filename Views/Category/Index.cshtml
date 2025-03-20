@@ -23,12 +23,17 @@
                 <td>@category.Id</td>
                 <td>@category.Name</td>
                 <td>
-                    <a class="btn btn-warning me-2" asp-action="Update" asp-route-id="@category.Id">
-                        <i class="fa fa-edit"></i> Edit
-                    </a>
-                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@category.Id">
-                        <i class="fa fa-trash"></i> Delete
-                    </a>
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-light me-2" asp-action="Details" asp-route-id="@category.Id">
+                            <i class="fa fa-eye"></i> View
+                        </a>
+                        <a class="btn btn-warning me-2" asp-action="Update" asp-route-id="@category.Id">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@category.Id">
+                            <i class="fa fa-trash"></i> Delete
+                        </a>
+                    </div>
                 </td>
             </tr>
         }

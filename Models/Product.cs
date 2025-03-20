@@ -13,7 +13,7 @@ namespace Lab_03.WebProject.Models
         public decimal Price { get; set; }
         public string Description { get; set; }
         public string? ImageUrl { get; set; } // Đường dẫn đến hình ảnh đại diện
-        public List<ProductImage>? ImageUrls { get; set; } // Danh sách các hình ảnh khác
+        public List<ProductImage>? ImageUrls { get; set; } // Danh sách các hình ảnh phụ
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
     }
