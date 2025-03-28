@@ -1,7 +1,7 @@
 ﻿using Lab_03.WebProject.Models;
 using Lab_03.WebProject.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using ProjectName.Controllers;
+using Lab_03.WebProject.Controllers;
 
 namespace Lab_03.WebProject.Controllers
 {

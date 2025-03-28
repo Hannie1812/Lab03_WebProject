@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Lab_03.WebProject.Repositories;
-namespace ProjectName.Controllers
+namespace Lab_03.WebProject.Controllers
 {
     public class ProductController : Controller
     {
